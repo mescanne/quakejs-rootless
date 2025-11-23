@@ -2,9 +2,9 @@
 
 <div align="center">
   
-**Use [lklacar/q3js](https://github.com/lklacar/q3js) instead** - it's a more modern and feature-rich implementation.
+For a more advanced and modern setup consider **[lklacar/q3js](https://github.com/lklacar/q3js)** - it's a modern and feature-rich implementation.
 
-However this container exists for an easy implementation :)
+**For simplicity:** This project provides a **single-container solution** that's perfect for smaller setups.
 
 ---
   
