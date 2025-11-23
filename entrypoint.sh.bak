@@ -25,4 +25,4 @@ fi
 cd /quakejs
 
 echo "Starting QuakeJS server..."
-exec node build/ioq3ded.js +set fs_game baseq3 +set dedicated 1 +set fs_cdn "localhost:8080" +exec server.cfg
+exec node build/ioq3ded.js +set fs_game baseq3 +set dedicated 1 +exec server.cfg
