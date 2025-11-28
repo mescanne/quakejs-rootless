@@ -29,7 +29,7 @@ Try it live: **[gibs.oldschoolfrag.com](https://gibs.oldschoolfrag.com/)**
 
 </div>
 
-## 🎮 About
+## About
 
 This project provides a completely local QuakeJS server that runs entirely in Docker. No external dependencies, no content servers, no proxies - just pure Quake III Arena gaming in your browser.
 
