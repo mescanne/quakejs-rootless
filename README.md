@@ -23,7 +23,7 @@ For a more advanced and modern setup consider **[lklacar/q3js](https://github.co
 
 A fully self-contained, Dockerized QuakeJS server running on Debian 13 and Node.js 22.x LTS
 
-## 🎮 Demo
+## Demo
 
 Try it live: **[gibs.oldschoolfrag.com](https://gibs.oldschoolfrag.com/)**
 
