@@ -27,8 +27,6 @@ A fully self-contained, Dockerized QuakeJS server running on Debian 13 and Node.
 
 Try it live: **[gibs.oldschoolfrag.com](https://gibs.oldschoolfrag.com/)**
 
-**🔒 This container runs as a non-root user for enhanced security**
-
 </div>
 
 ## 🎮 About
@@ -36,14 +34,14 @@ Try it live: **[gibs.oldschoolfrag.com](https://gibs.oldschoolfrag.com/)**
 This project provides a completely local QuakeJS server that runs entirely in Docker. No external dependencies, no content servers, no proxies - just pure Quake III Arena gaming in your browser.
 
 **Key improvements in this fork:**
-- ✨ Updated to **Debian 13 Slim** base image
-- 🚀 Upgraded to **Node.js 22.x LTS** for better performance and security
-- 🔒 Forked Quake3JS Core **to remove CRITICAL and HIGH NPM package vulnerabilities** ([quakejs](https://github.com/JackBrenn/quakejs))
-- 🌐 **Production-ready Nginx-light web server**
-- 🛡️ **Runs as non-root user (quakejs)** for enhanced container security
-- 📦 Fully self-contained with all game assets bundled, no external content servers required
+- Updated to **Debian 13 Slim** base image
+- Upgraded to **Node.js 22.x LTS** for better performance and security
+- Forked Quake3JS Core to remove CRITICAL and HIGH NPM package vulnerabilities ([quakejs](https://github.com/JackBrenn/quakejs))
+- Nginx-light web server
+- Runs as non-root user (quakejs)
+- Fully self-contained with all game assets bundled, no external content servers required
 
-## 🚀 Quick Start
+## Quick Start
 
 ### Using Podman (Recommended)
 
@@ -93,7 +91,7 @@ Then run:
 docker-compose up -d
 ```
 
-## 🛠️ Building from Source
+## Building from Source
 
 ### Building with Podman (Recommended)
 
@@ -140,7 +138,7 @@ docker run -d \
   quakejs-rootless:latest
 ```
 
-## ⚙️ Configuration
+## Configuration
 
 ### Environment Variables
 
@@ -155,7 +153,7 @@ The server configuration can be customized by modifying `server.cfg`.
 - **8080** (or your custom HTTP_PORT) - Web interface (Nginx)
 - **27960** - Game server (WebSocket)
 
-## 📝 What's Different?
+## What's Different?
 
 This fork builds upon the excellent work of [@treyyoder/quakejs-docker](https://github.com/treyyoder/quakejs-docker) with the following updates:
 
@@ -182,19 +180,13 @@ This wouldn't be possible without these projects:
 - **[@nerosketch](https://github.com/nerosketch)** - [QuakeJS fork](https://github.com/nerosketch/quakejs.git) with local server capabilities
 - **[@inolen](https://github.com/inolen)** - Original [QuakeJS](https://github.com/inolen/quakejs) project
 
-## 📜 License
+## License
 
 MIT
-
-## 🎯 Questions
-
-- If you have questions, just open a GitHub issue and maybe I can help!
 
 ---
 
 <div align="center">
-
-**Ready to frag?** Share the server URL with your friends and enjoy some classic Quake III Arena! 🚀
 
 *For best security: Rootless container + Podman + Nginx + firewall + regular updates*
 
