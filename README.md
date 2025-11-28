@@ -12,13 +12,6 @@ For a more advanced and modern setup consider **[lklacar/q3js](https://github.co
 
 ## Play multiplayer Quake III Arena in your browser with Podman / Docker
 
-![Podman](https://img.shields.io/badge/Podman-892CA0?style=for-the-badge&logo=podman&logoColor=white)
-![Docker](https://img.shields.io/badge/Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![Debian](https://img.shields.io/badge/Debian-A81D33?style=for-the-badge&logo=debian&logoColor=white)
-![Node.js](https://img.shields.io/badge/Node.js_22.x-339933?style=for-the-badge&logo=node.js&logoColor=white)
-![Nginx](https://img.shields.io/badge/Nginx-009639?style=for-the-badge&logo=nginx&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-yellow?style=for-the-badge)
-
 [![Docker Hub](https://img.shields.io/badge/Docker%20Hub-awakenedpower%2Fquakejs--rootless-blue?style=for-the-badge&logo=docker)](https://hub.docker.com/r/awakenedpower/quakejs-rootless)
 
 A fully self-contained, Dockerized QuakeJS server running on Debian 13 and Node.js 22.x LTS
@@ -164,13 +157,6 @@ This fork builds upon the excellent work of [@treyyoder/quakejs-docker](https://
 | Web Server | Apache 2 | **Nginx Light** |
 | Container User | root | **non-root (quakejs)** |
 | Maintenance | Updated 2020 | **Updated 2025** |
-
-These updates provide:
-- Extended security support from Debian 13 Slim
-- Updated to the latest version of Node.js
-- Updated all npm packages removing critical vulnerabilities
-- Reduced attack surface with NGINX Light
-- Enhanced security through non-root container execution
 
 ## 🙏 Credits & Acknowledgments
 
