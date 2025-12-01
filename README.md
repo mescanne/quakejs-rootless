@@ -27,8 +27,8 @@ Try it live: **[gibs.oldschoolfrag.com](https://gibs.oldschoolfrag.com/)**
 This project provides a completely local QuakeJS server that runs entirely in Docker. No external dependencies, no content servers, no proxies - just pure Quake III Arena gaming in your browser.
 
 **Key improvements in this fork:**
-- Updated to **Debian 13 Slim** base image
-- Upgraded to **Node.js 22.x LTS** for better performance and security
+- Updated to Debian 13 Slim base image
+- Upgraded to Node.js 22.x LTS
 - Forked Quake3JS Core to remove CRITICAL and HIGH NPM package vulnerabilities ([quakejs](https://github.com/JackBrenn/quakejs))
 - Nginx-light web server
 - Runs as non-root user (quakejs)
@@ -156,7 +156,6 @@ This fork builds upon the excellent work of [@treyyoder/quakejs-docker](https://
 | Node.js | 14.x | **22.x LTS** |
 | Web Server | Apache 2 | **Nginx Light** |
 | Container User | root | **non-root (quakejs)** |
-| Maintenance | Updated 2020 | **Updated 2025** |
 
 ## 🙏 Credits & Acknowledgments
 
