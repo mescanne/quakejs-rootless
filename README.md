@@ -28,7 +28,7 @@ This project provides a completely local QuakeJS server that runs entirely in Do
 
 **Key improvements in this fork:**
 - Updated to Debian 13 Slim base image
-- Aim to keep vulnerabilities to an absolute minimum
+- Updated NPM packages
 - Upgraded to Node.js 22.x LTS
 - Nginx-light web server
 - Runs as non-root user (quakejs)
