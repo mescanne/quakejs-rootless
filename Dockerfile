@@ -1,4 +1,4 @@
-FROM dhi.io/debian-base:13
+FROM dhi.io/debian-base:trixie-debian13-dev
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
@@ -49,8 +49,11 @@ RUN cp /quakejs/html/* /home/quakejs/www/ && \
 
 COPY --chown=quakejs:quakejs ./include/assets/ /home/quakejs/www/assets
 
-# Install nginx
-RUN apt-get update && \
+# Create adm group and www-data user/group required by nginx-common post-install script, then install nginx
+RUN groupadd -r adm || true && \
+    groupadd -r www-data || true && \
+    useradd -r -g www-data www-data || true && \
+    apt-get update && \
     apt-get install -y --no-install-recommends nginx-light && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
