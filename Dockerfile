@@ -1,4 +1,4 @@
-FROM debian:trixie-slim
+FROM dhi.io/debian-base:13
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
