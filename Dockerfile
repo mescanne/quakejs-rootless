@@ -1,4 +1,4 @@
-FROM dhi.io/debian-base:trixie-debian13-dev
+FROM dhi.io/debian-base@sha256:135e45aa54d93f6d065af66ad15e1b27e1263fb830f60ed792a9cc398af2b654
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
