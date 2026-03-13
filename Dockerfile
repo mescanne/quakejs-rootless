@@ -31,6 +31,9 @@ RUN cd / && \
     git clone https://github.com/JackBrenn/quakejs.git && \
     chown -R quakejs:quakejs /quakejs
 
+# Update NPM
+RUN npm install -g npm@latest
+
 # Switch to non-root user for npm install
 USER quakejs
 WORKDIR /quakejs
