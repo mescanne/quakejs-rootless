@@ -1,76 +1,111 @@
-FROM dhi.io/debian-base@sha256:135e45aa54d93f6d065af66ad15e1b27e1263fb830f60ed792a9cc398af2b654
+#Builder
+FROM debian:trixie-slim AS builder
 
 ARG DEBIAN_FRONTEND=noninteractive
 ENV TZ=UTC
 
-# Combine RUN commands to reduce layers and clean up in same layer
 RUN apt-get update && \
-    apt-get upgrade -y && \
+    apt-get upgrade -y -o Dpkg::Options::="--force-confnew" && \
     apt-get install -y --no-install-recommends \
         curl \
         git \
-        jq \
+        netcat-openbsd \
         ca-certificates && \
     curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     apt-get install -y --no-install-recommends nodejs && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
-
-# Create non-root user
-RUN useradd -m -u 1000 quakejs
-
-# Create quakejs directory and web root
-RUN mkdir -p /quakejs /home/quakejs/www && \
-    chown -R quakejs:quakejs /quakejs /home/quakejs
-
-# Clone quakejs as root but set ownership
-RUN cd / && \
-    #Build from own fork of nerosketch/quakejs.git repository
-    #Required to update NPM packages and remove CRITICAL and HIGH vulnerabilities
-    #These changes are done @ https://github.com/JackBrenn/quakejs.git
-    git clone https://github.com/JackBrenn/quakejs.git && \
-    chown -R quakejs:quakejs /quakejs
-
-# Update NPM
-RUN npm install -g npm@latest
-
-# Switch to non-root user for npm install
-USER quakejs
-WORKDIR /quakejs
-RUN npm install --only=production
-
-# Switch back to root for file copying
-USER root
-
-COPY --chown=quakejs:quakejs server.cfg /quakejs/base/baseq3/server.cfg
-COPY --chown=quakejs:quakejs server.cfg /quakejs/base/cpma/server.cfg
-COPY --chown=quakejs:quakejs ./include/ioq3ded/ioq3ded.fixed.js /quakejs/build/ioq3ded.js
-
-# Copy web files to user directory
-RUN cp /quakejs/html/* /home/quakejs/www/ && \
-    chown -R quakejs:quakejs /home/quakejs/www
-
-COPY --chown=quakejs:quakejs ./include/assets/ /home/quakejs/www/assets
-
-# Create adm group and www-data user/group required by nginx-common post-install script, then install nginx
-RUN groupadd -r adm || true && \
-    groupadd -r www-data || true && \
-    useradd -r -g www-data www-data || true && \
-    apt-get update && \
+    git clone https://github.com/JackBrenn/quakejs.git /quakejs && \
     apt-get install -y --no-install-recommends nginx-light && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-COPY --chown=quakejs:quakejs nginx.conf /etc/nginx/nginx.conf
+RUN npm install -g npm@latest
+WORKDIR /quakejs
+RUN npm install --only=production
 
-# Create nginx temp directories
-RUN mkdir -p /tmp/client_temp /tmp/proxy_temp_path /tmp/fastcgi_temp /tmp/uwsgi_temp /tmp/scgi_temp && \
-    chown -R quakejs:quakejs /tmp/client_temp /tmp/proxy_temp_path /tmp/fastcgi_temp /tmp/uwsgi_temp /tmp/scgi_temp
+#Hardened image
+# Must be logged in to dhi.io (Docker Hardened Images)
+FROM dhi.io/debian-base@sha256:9525de383d949d1833d7353a5f3fcfdaaff3f2170dc6ed2170c6b7bddac5c109
 
-COPY --chown=quakejs:quakejs --chmod=755 entrypoint.sh /entrypoint.sh
+ARG DEBIAN_FRONTEND=noninteractive
+ENV TZ=UTC
+
+COPY --from=builder /usr/bin/node /usr/bin/node
+COPY --from=builder /usr/lib/node_modules /usr/lib/node_modules
+COPY --from=builder /usr/bin/npm /usr/bin/npm
+COPY --from=builder /usr/bin/sed /usr/bin/sed
+COPY --from=builder /usr/bin/curl /usr/bin/curl
+COPY --from=builder /usr/bin/nc /usr/bin/nc
+
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libstdc++.so.6 /usr/lib/x86_64-linux-gnu/libstdc++.so.6
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 /usr/lib/x86_64-linux-gnu/libgcc_s.so.1
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libcurl.so.4 /usr/lib/x86_64-linux-gnu/libcurl.so.4
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libnghttp2.so.14 /usr/lib/x86_64-linux-gnu/libnghttp2.so.14
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libnghttp3.so.9 /usr/lib/x86_64-linux-gnu/libnghttp3.so.9
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libngtcp2.so.16 /usr/lib/x86_64-linux-gnu/libngtcp2.so.16
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libngtcp2_crypto_gnutls.so.8 /usr/lib/x86_64-linux-gnu/libngtcp2_crypto_gnutls.so.8
+COPY --from=builder /usr/lib/x86_64-linux-gnu/librtmp.so.1 /usr/lib/x86_64-linux-gnu/librtmp.so.1
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libssh2.so.1 /usr/lib/x86_64-linux-gnu/libssh2.so.1
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libpsl.so.5 /usr/lib/x86_64-linux-gnu/libpsl.so.5
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libgnutls.so.30 /usr/lib/x86_64-linux-gnu/libgnutls.so.30
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2 /usr/lib/x86_64-linux-gnu/libgssapi_krb5.so.2
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libldap.so.2 /usr/lib/x86_64-linux-gnu/libldap.so.2
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libbrotlidec.so.1 /usr/lib/x86_64-linux-gnu/libbrotlidec.so.1
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libbrotlicommon.so.1 /usr/lib/x86_64-linux-gnu/libbrotlicommon.so.1
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libkrb5.so.3 /usr/lib/x86_64-linux-gnu/libkrb5.so.3
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libk5crypto.so.3 /usr/lib/x86_64-linux-gnu/libk5crypto.so.3
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libkrb5support.so.0 /usr/lib/x86_64-linux-gnu/libkrb5support.so.0
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libsasl2.so.2 /usr/lib/x86_64-linux-gnu/libsasl2.so.2
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libidn2.so.0 /usr/lib/x86_64-linux-gnu/libidn2.so.0
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libunistring.so.5 /usr/lib/x86_64-linux-gnu/libunistring.so.5
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libp11-kit.so.0 /usr/lib/x86_64-linux-gnu/libp11-kit.so.0
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libtasn1.so.6 /usr/lib/x86_64-linux-gnu/libtasn1.so.6
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libnettle.so.8 /usr/lib/x86_64-linux-gnu/libnettle.so.8
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libhogweed.so.6 /usr/lib/x86_64-linux-gnu/libhogweed.so.6
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libgmp.so.10 /usr/lib/x86_64-linux-gnu/libgmp.so.10
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libffi.so.8 /usr/lib/x86_64-linux-gnu/libffi.so.8
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libcom_err.so.2 /usr/lib/x86_64-linux-gnu/libcom_err.so.2
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libkeyutils.so.1 /usr/lib/x86_64-linux-gnu/libkeyutils.so.1
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0 /usr/lib/x86_64-linux-gnu/libpcre2-8.so.0
+COPY --from=builder /usr/lib/x86_64-linux-gnu/libcrypt.so.1 /usr/lib/x86_64-linux-gnu/libcrypt.so.1
+
+COPY --from=builder /usr/sbin/nginx /usr/sbin/nginx
+COPY --from=builder /etc/nginx /etc/nginx
+COPY --from=builder /usr/lib/nginx /usr/lib/nginx
+COPY --from=builder /var/lib/nginx /var/lib/nginx
+COPY --from=builder /usr/share/nginx /usr/share/nginx
+
+COPY --from=builder --chown=65532:65532 /quakejs /quakejs
+
+RUN mkdir -p /home/nonroot/www && \
+    chown -R 65532:65532 /home/nonroot/www /quakejs
+
+COPY --chown=65532:65532 server.cfg /quakejs/base/baseq3/server.cfg
+COPY --chown=65532:65532 server.cfg /quakejs/base/cpma/server.cfg
+COPY --chown=65532:65532 ./include/ioq3ded/ioq3ded.fixed.js /quakejs/build/ioq3ded.js
+
+RUN cp /quakejs/html/* /home/nonroot/www/ && \
+    chown -R 65532:65532 /home/nonroot/www
+
+COPY --chown=65532:65532 ./include/assets/ /home/nonroot/www/assets
+COPY --chown=65532:65532 nginx.conf /etc/nginx/nginx.conf
+
+RUN mkdir -p \
+        /tmp/client_temp \
+        /tmp/proxy_temp_path \
+        /tmp/fastcgi_temp \
+        /tmp/uwsgi_temp \
+        /tmp/scgi_temp && \
+    chown -R 65532:65532 \
+        /tmp/client_temp \
+        /tmp/proxy_temp_path \
+        /tmp/fastcgi_temp \
+        /tmp/uwsgi_temp \
+        /tmp/scgi_temp
+
+COPY --chown=65532:65532 --chmod=755 entrypoint.sh /entrypoint.sh
 
 EXPOSE 8080 27960
 
-USER quakejs
+USER nonroot
 
 ENTRYPOINT ["/entrypoint.sh"]

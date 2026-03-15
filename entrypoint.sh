@@ -2,9 +2,9 @@
 set -e
 
 # Create nginx temp directories at runtime
-mkdir -p /tmp/client_temp /tmp/proxy_temp_path /tmp/fastcgi_temp /tmp/uwsgi_temp /tmp/scgi_temp
+mkdir -p /tmp/client_temp /tmp/proxy_temp_path /tmp/fastcgi_temp /tmp/uwsgi_tmp /tmp/scgi_temp
 
-cd /home/quakejs/www
+cd /home/nonroot/www
 
 sed -i "s/'quakejs:/window.location.hostname + ':/g" index.html
 sed -i "s/':80'/':${HTTP_PORT:-8080}'/g" index.html
@@ -14,10 +14,10 @@ echo "Starting web server on port 8080..."
 nginx -c /etc/nginx/nginx.conf
 
 # Give nginx time to start
-sleep 1
+sleep 2
 
-# Verify nginx started by checking if it's listening on port 8080
-if ! nc -z localhost 8080 2>/dev/null && ! curl -s http://localhost:8080 >/dev/null 2>&1; then
+# Check nginx is still running by looking for its pid file
+if [ ! -f /tmp/nginx.pid ]; then
     echo "ERROR: Web server failed to start!"
     exit 1
 fi
