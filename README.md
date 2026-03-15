@@ -32,7 +32,7 @@ This project provides a completely local QuakeJS server that runs entirely in Do
 - Upgraded to Node.js 22.x LTS
 - Nginx-light web server
 - Runs as non-root user
-- Fully self-contained with all game assets bundled, no external content servers required
+- Small size ~280MB
 
 ## Quick Start
 
