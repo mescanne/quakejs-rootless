@@ -2,7 +2,7 @@
 set -e
 
 # Create nginx temp directories at runtime
-mkdir -p /tmp/client_temp /tmp/proxy_temp_path /tmp/fastcgi_temp /tmp/uwsgi_tmp /tmp/scgi_temp
+mkdir -p /tmp/client_temp /tmp/proxy_temp_path /tmp/fastcgi_temp /tmp/uwsgi_temp /tmp/scgi_temp
 
 cd /home/nonroot/www
 
