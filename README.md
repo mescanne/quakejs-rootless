@@ -152,7 +152,7 @@ This fork builds upon the excellent work of [@treyyoder/quakejs-docker](https://
 
 | Component | Original | This Fork |
 |-----------|----------|-----------|
-| Base OS | Ubuntu 20.04 | **Debian 13 Slim** |
+| Base OS | Ubuntu 20.04 | **Debian 13 Docker Hardened Image** |
 | Node.js | 14.x | **22.x LTS** |
 | Web Server | Apache 2 | **Nginx Light** |
 | Container User | root | **non-root (quakejs)** |
