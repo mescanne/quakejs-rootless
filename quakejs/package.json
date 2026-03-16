@@ -8,7 +8,7 @@
   },
   "repository": {
     "type": "git",
-    "url": "git://github.com/inolen/quakejs.git"
+    "url": "git://github.com/JackBrenn/quakejs-rootless.git"
   },
   "author": "Anthony Pesch",
   "license": "MIT",
