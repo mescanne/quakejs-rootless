@@ -8,17 +8,15 @@ RUN apt-get update && \
     apt-get upgrade -y -o Dpkg::Options::="--force-confnew" && \
     apt-get install -y --no-install-recommends \
         curl \
-        git \
         netcat-openbsd \
         ca-certificates && \
     curl -fsSL https://deb.nodesource.com/setup_22.x | bash - && \
     apt-get install -y --no-install-recommends nodejs && \
-    git clone https://github.com/JackBrenn/quakejs.git /quakejs && \
     apt-get install -y --no-install-recommends nginx-light && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
 
-RUN npm install -g npm@latest
+COPY ./quakejs /quakejs
 WORKDIR /quakejs
 RUN npm install --only=production
 
@@ -41,8 +39,6 @@ COPY --from=builder /usr/lib/x86_64-linux-gnu/libgcc_s.so.1 /usr/lib/x86_64-linu
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libcurl.so.4 /usr/lib/x86_64-linux-gnu/libcurl.so.4
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libnghttp2.so.14 /usr/lib/x86_64-linux-gnu/libnghttp2.so.14
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libnghttp3.so.9 /usr/lib/x86_64-linux-gnu/libnghttp3.so.9
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libngtcp2.so.16 /usr/lib/x86_64-linux-gnu/libngtcp2.so.16
-COPY --from=builder /usr/lib/x86_64-linux-gnu/libngtcp2_crypto_gnutls.so.8 /usr/lib/x86_64-linux-gnu/libngtcp2_crypto_gnutls.so.8
 COPY --from=builder /usr/lib/x86_64-linux-gnu/librtmp.so.1 /usr/lib/x86_64-linux-gnu/librtmp.so.1
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libssh2.so.1 /usr/lib/x86_64-linux-gnu/libssh2.so.1
 COPY --from=builder /usr/lib/x86_64-linux-gnu/libpsl.so.5 /usr/lib/x86_64-linux-gnu/libpsl.so.5
