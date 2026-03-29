@@ -30,7 +30,8 @@ This project provides a completely local QuakeJS server that runs entirely in Do
 - Updated to a Docker Hardened Base Image (Debian)
 - Updated NPM packages where possible
 - Upgraded to Node.js 22.x LTS
-- Nginx-light web server
+- Nginx-light web server multiplexing Web and Game traffic over a single port
+- Native HTTPS proxy support without altering game client files
 - Runs as non-root user
 - Small size ~280MB
 
@@ -41,9 +42,7 @@ This project provides a completely local QuakeJS server that runs entirely in Do
 ```bash
 podman run -d \
   --name quakejs \
-  -e HTTP_PORT=8080 \
   -p 8080:8080 \
-  -p 27960:27960 \
   docker.io/awakenedpower/quakejs-rootless:latest
 ```
 
@@ -52,9 +51,7 @@ podman run -d \
 ```bash
 docker run -d \
   --name quakejs \
-  -e HTTP_PORT=8080 \
   -p 8080:8080 \
-  -p 27960:27960 \
   docker.io/awakenedpower/quakejs-rootless:latest
 ```
 
@@ -69,12 +66,12 @@ version: '3.8'
 services:
   quakejs:
     container_name: quakejs
+    # To use the pre-built image:
     image: awakenedpower/quakejs-rootless:latest
-    environment:
-      - HTTP_PORT=8080
+    # Or to build directly from the repository source, uncomment the following line and comment out 'image' above:
+    # build: https://github.com/JackBrenn/quakejs-rootless.git
     ports:
       - '8080:8080'
-      - '27960:27960'
     restart: unless-stopped
 ```
 
@@ -103,9 +100,7 @@ podman build -t quakejs-rootless:latest .
 ```bash
 podman run -d \
   --name quakejs \
-  -e HTTP_PORT=8080 \
   -p 8080:8080 \
-  -p 27960:27960 \
   quakejs-rootless:latest
 ```
 
@@ -125,17 +120,11 @@ docker build -t quakejs-rootless:latest .
 ```bash
 docker run -d \
   --name quakejs \
-  -e HTTP_PORT=8080 \
   -p 8080:8080 \
-  -p 27960:27960 \
   quakejs-rootless:latest
 ```
 
 ## Configuration
-
-### Environment Variables
-
-- `HTTP_PORT` - The HTTP port to serve the web interface (default: 8080)
 
 ### Server Configuration
 
@@ -143,8 +132,7 @@ The server configuration can be customized by modifying `server.cfg`.
 
 ### Ports
 
-- **8080** (or your custom HTTP_PORT) - Web interface (Nginx)
-- **27960** - Game server (WebSocket)
+- **8080** - Multiplexed Web interface and Game server port. Web requests are handled by Nginx directly, while WebSocket game traffic is seamlessly forwarded internally. This makes proxying behind SSL natively supported via a single port.
 
 ## What's Different?
 
@@ -156,6 +144,7 @@ This fork builds upon the excellent work of [@treyyoder/quakejs-docker](https://
 | Node.js | 14.x | **22.x LTS** |
 | Web Server | Apache 2 | **Nginx Light** |
 | Container User | root | **non-root** |
+| Networking | Dual Port | **Single Port Multiplexed via Nginx** |
 
 ## 🙏 Credits & Acknowledgments
 

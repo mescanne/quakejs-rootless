@@ -15,11 +15,11 @@
 ## 5. Verify that SWAG and quakejs-rootless are on the same Docker network
 ## 6. Restart SWAG container: docker restart swag
 ##
-## Architecture: Internet → SWAG (443 + 27960) → quakejs-rootless (8080 + 27960)
+## Architecture: Internet → SWAG (443) → quakejs-rootless (8080)
 ## Ports only required to be published on SWAG container
 ## Documentation: https://docs.linuxserver.io/general/swag/
 
-# HTTP interface on port 443
+# Unified Web and WebSocket interface on port 443
 server {
     listen 443 ssl;
     listen [::]:443 ssl;
@@ -37,35 +37,22 @@ server {
         set $upstream_proto http;
         proxy_pass $upstream_proto://$upstream_app:$upstream_port;
 
+        # Standard Proxy Headers
         proxy_set_header X-Forwarded-Proto $scheme;
         proxy_set_header X-Forwarded-Host $host;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        # Add security headers
-        add_header Content-Security-Policy "upgrade-insecure-requests" always;
-    }
-}
-# WebSocket SSL server on port 27960
-
-server {
-    listen 27960 ssl;
-    listen [::]:27960 ssl;
-    server_name example.com;
-
-    ssl_certificate     /config/etc/letsencrypt/live/example.com/fullchain.pem;
-    ssl_certificate_key /config//etc/letsencrypt/live/example.com/privkey.pem;
-
-    location / {
-        proxy_pass http://quakejs:27960;
+        
+        # WebSocket Support
         proxy_http_version 1.1;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection "Upgrade";
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-        proxy_set_header X-Forwarded-Proto $scheme;
+
+        # Add security headers (CSP upgrade-insecure-requests is critical for mixed content)
+        add_header Content-Security-Policy "upgrade-insecure-requests" always;
+        
+        # Increase timeouts for long-lived WebSocket connections
         proxy_connect_timeout 7d;
         proxy_send_timeout 7d;
         proxy_read_timeout 7d;
-        proxy_buffering off;
     }
 }

@@ -6,9 +6,6 @@ mkdir -p /tmp/client_temp /tmp/proxy_temp_path /tmp/fastcgi_temp /tmp/uwsgi_temp
 
 cd /home/nonroot/www
 
-sed -i "s/'quakejs:/window.location.hostname + ':/g" index.html
-sed -i "s/':80'/':${HTTP_PORT:-8080}'/g" index.html
-
 # Start Nginx web server
 echo "Starting web server on port 8080..."
 nginx -c /etc/nginx/nginx.conf

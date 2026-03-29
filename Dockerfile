@@ -100,7 +100,7 @@ RUN mkdir -p \
 
 COPY --chown=65532:65532 --chmod=755 entrypoint.sh /entrypoint.sh
 
-EXPOSE 8080 27960
+EXPOSE 8080
 
 USER nonroot
 
