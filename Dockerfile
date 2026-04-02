@@ -100,6 +100,9 @@ RUN mkdir -p \
 
 COPY --chown=65532:65532 --chmod=755 entrypoint.sh /entrypoint.sh
 
+RUN groupadd -r -g 65532 nonroot \
+    && useradd -r -u 65532 -g nonroot -d /app -s /sbin/nologin nonroot
+
 EXPOSE 8080
 
 USER nonroot
