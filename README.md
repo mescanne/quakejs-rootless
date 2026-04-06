@@ -130,6 +130,41 @@ docker run -d \
 
 The server configuration can be customized by modifying `server.cfg`.
 
+#### Server Environment Variables
+
+You can inject environment variables to easily tune the QuakeJS server performance. The most important setting is `SV_FPS`, which dictates the server's simulation tick rate. 
+
+- `SV_FPS` - Server framerate/tick rate. Default is `20`. Setting this to `125` will drastically reduce input delay and ping times (125Hz = 125 FPS server-side logic).
+- `SV_MAXRATE` - Maximum bytes per second the server will send to a single client. Default is engine-dependent, but `25000` is recommended for broadband connections.
+
+**Example with Podman/Docker:**
+```bash
+podman run -d \
+  --name quakejs \
+  -p 8080:8080 \
+  -e SV_FPS=125 \
+  -e SV_MAXRATE=25000 \
+  docker.io/awakenedpower/quakejs-rootless:latest
+```
+
+### Client Configuration (URL Arguments)
+
+The web client can be dynamically configured just by appending settings to the URL. Because the default engine settings were designed for 56k dial-up modems in 1999, using these URL overrides will result in a significantly smoother and more modern experience!
+
+- **Standard Connection** (Engine Defaults)
+  `http://<your-server-ip>:8080/`
+  
+- **Competitive/Broadband Connection** (Highly Recommended)
+  `http://<your-server-ip>:8080/?set%20rate%2025000&set%20cl_maxpackets%20125&set%20cg_predictItems%201`
+  *What this does:*
+  - `rate 25000` - Tells the server your internet can handle high bandwidth updates.
+  - `cl_maxpackets 125` - Syncs your client's upload rate to match a 125Hz server.
+  - `cg_predictItems 1` - Eliminates the visual delay when picking up weapons or health on higher ping connections.
+
+- **High Ping / Unstable Connection**
+  `http://<your-server-ip>:8080/?set%20cl_maxpackets%2060&set%20snaps%2040`
+  *What this does:* Trades maximum update frequency for stability on jittery network connections.
+
 ### Ports
 
 - **8080** - Multiplexed Web interface and Game server port. Web requests are handled by Nginx directly, while WebSocket game traffic is seamlessly forwarded internally. This makes proxying behind SSL natively supported via a single port.

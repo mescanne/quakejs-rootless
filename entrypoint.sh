@@ -22,4 +22,16 @@ fi
 cd /quakejs
 
 echo "Starting QuakeJS server..."
-exec node build/ioq3ded.js +set fs_game baseq3 +set dedicated 1 +set fs_cdn "localhost:8080" +exec server.cfg
+
+# Build dynamic arguments based on environment variables
+ARGS="+set fs_game baseq3 +set dedicated 1 +set fs_cdn localhost:8080"
+
+if [ -n "$SV_FPS" ]; then
+    ARGS="$ARGS +set sv_fps $SV_FPS"
+fi
+
+if [ -n "$SV_MAXRATE" ]; then
+    ARGS="$ARGS +set sv_maxRate $SV_MAXRATE"
+fi
+
+exec node build/ioq3ded.js $ARGS +exec server.cfg
